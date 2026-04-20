@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shay Bering — AXI Onboarding Hub</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #ffffff; --bg2: #f5f4f0; --bg3: #eeece7;
+    --text: #1a1a18; --text2: #5f5e5a; --text3: #888780;
+    --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22);
+    --radius: 8px; --radius-lg: 12px;
+    --blue: #378ADD; --blue-light: #E6F1FB; --blue-dark: #0C447C;
+    --green: #639922; --green-light: #EAF3DE; --green-dark: #27500A;
+    --purple: #534AB7; --purple-light: #EEEDFE; --purple-dark: #3C3489;
+    --teal: #1D9E75; --teal-light: #E1F5EE; --teal-dark: #085041;
+    --amber: #BA7517; --amber-light: #FAEEDA; --amber-dark: #633806;
+    --red: #E24B4A; --red-light: #FCEBEB; --red-dark: #791F1F;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1e1e1c; --bg2: #2a2a27; --bg3: #323230;
+      --text: #f0ede8; --text2: #b4b2a9; --text3: #888780;
+      --border: rgba(255,255,255,0.12); --border2: rgba(255,255,255,0.22);
+      --blue-light: #0c2a45; --blue-dark: #85B7EB;
+      --green-light: #1a2e0a; --green-dark: #C0DD97;
+      --purple-light: #1e1a45; --purple-dark: #AFA9EC;
+      --teal-light: #073327; --teal-dark: #5DCAA5;
+      --amber-light: #2e1e05; --amber-dark: #FAC775;
+      --red-light: #2e0a0a; --red-dark: #F09595;
+    }
+  }
+  html { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; background: var(--bg); color: var(--text); line-height: 1.6; }
+  body { max-width: 900px; margin: 0 auto; padding: 24px 16px 80px; }
+  h1 { font-size: 22px; font-weight: 500; }
+  h2 { font-size: 18px; font-weight: 500; }
+  h3 { font-size: 15px; font-weight: 500; }
+  .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 10px; }
+  .card-tinted { border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 10px; }
+  .sec-lbl { font-size: 11px; font-weight: 500; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+  .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: var(--radius); font-weight: 500; }
+  .btn { background: transparent; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 7px 14px; font-size: 12px; cursor: pointer; color: var(--text); transition: background 0.15s; font-family: inherit; }
+  .btn:hover { background: var(--bg2); }
+  .btn:active { transform: scale(0.98); }
+  .btn-blue { background: var(--blue); color: white; border-color: var(--blue); }
+  .btn-blue:hover { background: var(--blue-dark); }
+  .tab-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.25rem; padding: 10px; background: var(--bg2); border-radius: var(--radius-lg); border: 0.5px solid var(--border); }
+  .tab { padding: 7px 14px; font-size: 12px; cursor: pointer; border-radius: var(--radius); border: none; background: transparent; color: var(--text2); transition: all 0.15s; font-family: inherit; }
+  .tab.active { background: var(--bg); color: var(--text); font-weight: 500; border: 0.5px solid var(--border); }
+  .tab:hover:not(.active) { background: var(--bg3); }
+  .prog-outer { background: var(--bg2); border-radius: 99px; height: 5px; width: 100%; }
+  .prog-inner { border-radius: 99px; height: 5px; transition: width 0.5s ease; }
+  .check-circle { width: 20px; height: 20px; min-width: 20px; border-radius: 50%; border: 1.5px solid var(--border2); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .check-circle.done { background: var(--green); border-color: var(--green); }
+  .check-circle.done::after { content: ''; display: block; width: 5px; height: 9px; border: 2px solid white; border-top: none; border-left: none; transform: rotate(45deg) translate(-1px,-1px); }
+  .day-pill { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; cursor: pointer; border: 0.5px solid var(--border); background: var(--bg2); color: var(--text2); transition: all 0.15s; user-select: none; }
+  .day-pill.done { background: var(--green-light); color: var(--green-dark); border-color: var(--green); }
+  .day-pill.active { background: var(--blue-light); color: var(--blue-dark); border-color: var(--blue); }
+  .metric-card { background: var(--bg2); border-radius: var(--radius); padding: 1rem; text-align: center; }
+  .metric-val { font-size: 24px; font-weight: 500; }
+  .metric-lbl { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .person-card { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid var(--border); }
+  .person-card:last-child { border-bottom: none; }
+  .avatar { width: 40px; height: 40px; min-width: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; }
+  .ref-item { padding: 12px 0; border-bottom: 0.5px solid var(--border); display: flex; align-items: flex-start; gap: 12px; }
+  .ref-item:last-child { border-bottom: none; }
+  .ref-icon { width: 36px; height: 36px; min-width: 36px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 16px; background: var(--bg2); }
+  textarea { width: 100%; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 9px 11px; font-size: 13px; font-family: inherit; color: var(--text); background: var(--bg); resize: vertical; line-height: 1.5; }
+  textarea:focus { outline: none; border-color: var(--blue); }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+  @media(max-width:600px){ .grid-2,.grid-3,.grid-4 { grid-template-columns: 1fr 1fr; } }
+  @media(max-width:400px){ .grid-2,.grid-3,.grid-4 { grid-template-columns: 1fr; } }
+  .dot { width: 7px; height: 7px; min-width: 7px; border-radius: 50%; margin-top: 7px; }
+  table.data { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.data th { text-align: left; padding: 6px 8px; font-size: 11px; color: var(--text2); font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 0.5px solid var(--border2); }
+  table.data td { padding: 9px 8px; color: var(--text2); border-bottom: 0.5px solid var(--border); vertical-align: top; }
+  table.data td:first-child { color: var(--text); font-weight: 500; }
+  .header-strip { background: var(--blue-light); border: 0.5px solid var(--blue); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .sync-bar { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 8px 12px; background: var(--bg2); border-radius: var(--radius); border: 0.5px solid var(--border); margin-bottom: 12px; flex-wrap: wrap; }
+  .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text3); }
+  .sync-dot.synced { background: var(--green); }
+  .sync-dot.syncing { background: var(--amber); animation: pulse 1s infinite; }
+  .sync-dot.error { background: var(--red); }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .setup-banner { background: var(--amber-light); border: 0.5px solid var(--amber); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 12px; }
+  input[type="text"] { width: 100%; border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 8px 10px; font-size: 13px; font-family: inherit; color: var(--text); background: var(--bg); }
+  input[type="text"]:focus { outline: none; border-color: var(--blue); }
+</style>
+</head>
+<body>
+
+<div class="header-strip">
+  <div>
+    <div style="font-size:11px;color:var(--blue-dark);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Axonic Insurance · Director, Strategic Initiatives · CFO Office</div>
+    <h1 style="color:var(--blue-dark);">Shay's onboarding hub</h1>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+    <span class="badge" style="background:var(--blue);color:white;">Day 1 · Month 1</span>
+    <span style="font-size:12px;color:var(--blue-dark);" id="hdr-pct">0% complete</span>
+  </div>
+</div>
+
+<!-- Sync status bar -->
+<div class="sync-bar" id="sync-bar">
+  <div class="sync-dot" id="sync-dot"></div>
+  <span id="sync-status" style="color:var(--text2);">Not connected to Google Sheets — set up below</span>
+  <button class="btn" style="margin-left:auto;font-size:11px;" onclick="showSetup()">Configure sync</button>
+</div>
+
+<!-- Setup banner (shown when no URL configured) -->
+<div id="setup-banner" class="setup-banner" style="display:none;">
+  <div style="font-size:13px;font-weight:500;color:var(--amber-dark);margin-bottom:8px;">Connect to Google Sheets</div>
+  <div style="font-size:13px;color:var(--amber-dark);line-height:1.6;margin-bottom:10px;">Paste your Google Apps Script Web App URL below. See the setup guide in Box for instructions — it takes about 5 minutes.</div>
+  <input type="text" id="script-url-input" placeholder="https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec" style="margin-bottom:8px;" />
+  <div style="display:flex;gap:8px;">
+    <button class="btn btn-blue" onclick="saveScriptUrl()">Save & connect</button>
+    <button class="btn" onclick="document.getElementById('setup-banner').style.display='none'">Dismiss</button>
+  </div>
+</div>
+
+<div class="tab-bar" id="main-tabs">
+  <button class="tab active" onclick="show('overview')">Overview</button>
+  <button class="tab" onclick="show('906090')">30-60-90 plan</button>
+  <button class="tab" onclick="show('calendar')">Daily plan</button>
+  <button class="tab" onclick="show('org')">AXI org &amp; people</button>
+  <button class="tab" onclick="show('role')">Your role</button>
+  <button class="tab" onclick="show('refs')">Reference library</button>
+  <button class="tab" onclick="show('remote')">Remote playbook</button>
+  <button class="tab" onclick="show('tracker')">Progress tracker</button>
+</div>
+
+<div id="body"></div>
+
+<script>
+// ============================================================
+// STATE & PERSISTENCE
+// ============================================================
+const S = {
+  completedDays: {}, taskChecks: {}, dayNotes: {},
+  activeSection: 'overview', activeDay: null
+};
+
+let SCRIPT_URL = '';
+let saveTimer = null;
+let lastSynced = null;
+
+function localSave() {
+  try { localStorage.setItem('axi_shay_v3', JSON.stringify(S)); } catch(e) {}
+}
+
+function localLoad() {
+  try {
+    const d = localStorage.getItem('axi_shay_v3');
+    if (d) { const p = JSON.parse(d); Object.assign(S, p); }
+  } catch(e) {}
+}
+
+function loadScriptUrl() {
+  SCRIPT_URL = localStorage.getItem('axi_script_url') || '';
+  return SCRIPT_URL;
+}
+
+function saveScriptUrl() {
+  const val = document.getElementById('script-url-input').value.trim();
+  if (!val.startsWith('https://script.google.com')) {
+    alert('Please enter a valid Google Apps Script URL (starts with https://script.google.com)');
+    return;
+  }
+  SCRIPT_URL = val;
+  localStorage.setItem('axi_script_url', SCRIPT_URL);
+  document.getElementById('setup-banner').style.display = 'none';
+  setSyncStatus('syncing', 'Testing connection...');
+  loadFromSheets().then(() => {
+    setSyncStatus('synced', 'Connected to Google Sheets');
+  }).catch(() => {
+    setSyncStatus('error', 'Connection failed — check your URL');
+  });
+}
+
+function showSetup() {
+  const banner = document.getElementById('setup-banner');
+  banner.style.display = banner.style.display === 'none' ? 'block' : 'none';
+  if (SCRIPT_URL) {
+    document.getElementById('script-url-input').value = SCRIPT_URL;
+  }
+}
+
+function setSyncStatus(state, msg) {
+  const dot = document.getElementById('sync-dot');
+  const status = document.getElementById('sync-status');
+  dot.className = 'sync-dot ' + state;
+  status.textContent = msg;
+}
+
+// ============================================================
+// GOOGLE SHEETS SYNC
+// ============================================================
+async function saveToSheets() {
+  if (!SCRIPT_URL) return;
+  setSyncStatus('syncing', 'Saving to Google Sheets...');
+  try {
+    const resp = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'save',
+        payload: {
+          completedDays: S.completedDays,
+          taskChecks: S.taskChecks,
+          dayNotes: S.dayNotes
+        }
+      })
+    });
+    const data = await resp.json();
+    if (data.success) {
+      lastSynced = new Date();
+      setSyncStatus('synced', 'Synced to Google Sheets · ' + lastSynced.toLocaleTimeString());
+    } else {
+      setSyncStatus('error', 'Sync error: ' + (data.error || 'unknown'));
+    }
+  } catch(err) {
+    setSyncStatus('error', 'Sync failed — check connection');
+  }
+}
+
+async function loadFromSheets() {
+  if (!SCRIPT_URL) return;
+  setSyncStatus('syncing', 'Loading from Google Sheets...');
+  try {
+    const resp = await fetch(SCRIPT_URL + '?action=load');
+    const data = await resp.json();
+    if (data.success && data.payload) {
+      const p = data.payload;
+      if (p.completedDays) S.completedDays = p.completedDays;
+      if (p.taskChecks) S.taskChecks = p.taskChecks;
+      if (p.dayNotes) S.dayNotes = p.dayNotes;
+      localSave();
+      render();
+      updateHeader();
+      setSyncStatus('synced', 'Loaded from Google Sheets · ' + new Date().toLocaleTimeString());
+    } else {
+      setSyncStatus('synced', 'Connected — no data yet');
+    }
+  } catch(err) {
+    setSyncStatus('error', 'Could not load from Sheets');
+    throw err;
+  }
+}
+
+function scheduleSave() {
+  localSave();
+  if (!SCRIPT_URL) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => saveToSheets(), 2000); // debounce 2s
+}
+
+// ============================================================
+// DATA
+// ============================================================
+const dailyPlan = [
+  {day:1,theme:"Welcome & orientation",focus:"Logistics first",tasks:["Complete IT setup: email, Slack, VPN, calendar access — confirm everything works","Read your full job description and the proposed CFO Office role document","Send a brief intro email to your manager and confirm your first-week meeting schedule","Review Axonic's LinkedIn and public website — note what the firm says about itself","Write 3 questions you want answered in your first week"]},
+  {day:2,theme:"AXI business model",focus:"Learn the insurance core",tasks:["Read the 'How insurance companies make money' guide in the Reference Library tab","Learn the combined ratio concept — ask your manager for AXI's target ratio","Map where AXI's revenue comes from (lines of business) — ask your manager","Schedule intro call: Chief of Staff (your direct manager)","Draft a one-paragraph summary of AXI's business model in plain language"]},
+  {day:3,theme:"Meet the CFO Office",focus:"Finance team immersion",tasks:["Intro call: CFO (your primary executive partner)","Ask for the org chart for Finance — who reports to the CFO, what each person owns","Ask for the most recent Blue Book — read it cover to cover","Note: what sections exist, what data is in each, who owns each section","Write your first impressions of the Blue Book — what works, what's unclear"]},
+  {day:4,theme:"Meet Investments",focus:"Investment team context",tasks:["Intro call: Head of Investments (or investment lead)","Learn: what asset classes does AXI's portfolio include?","Understand: what is the investment team's relationship to the CFO Office?","Ask: what investment-related materials does the CFO review weekly?","Note 2 open questions you want to answer about investment operations"]},
+  {day:5,theme:"Meet Operations & Technology",focus:"Cross-functional awareness",tasks:["Intro calls: Operations lead, Technology lead","Learn: what systems does AXI run on? (ERP, portfolio system, HR system)","Ask: what are the biggest operational pain points right now?","Understand: how does Tech support Finance and Investments?","Write a brief summary of how Ops and Tech connect to your role"]},
+  {day:6,theme:"Week 1 reflection",focus:"Synthesize & plan",tasks:["Write a Week 1 summary: what you've learned, who you've met, open questions","Send a recap note to your manager with key takeaways from week 1","Identify: top 3 things you want to learn in week 2","Review your calendar for week 2 — confirm all intro meetings are scheduled","Rest: protect your energy — remote onboarding is cognitively intense"]},
+  {day:7,theme:"AXI strategy & priorities",focus:"Strategic landscape",tasks:["Ask your manager: what are the firm's top 3 strategic priorities this year?","Ask for any existing strategic initiative tracker or roadmap","Read any board or leadership materials you've been given access to","Identify: which initiatives are currently active, who owns them?","Map: where does your role sit in advancing each priority?"]},
+  {day:8,theme:"Blue Book deep dive",focus:"Reporting ownership",tasks:["Get the last 3 Blue Books — look for trends, changes, recurring themes","Understand the production timeline: who submits what, by when","Ask: what is your role in Blue Book coordination going forward?","Identify: one section you could own or improve in the next 30 days","Draft: a proposed process improvement for one Blue Book section"]},
+  {day:9,theme:"Meet Legal & Compliance",focus:"Regulatory awareness",tasks:["Intro call: General Counsel or Chief Compliance Officer","Learn: what regulatory frameworks govern AXI? (state insurance regulators)","Understand: how do entity management and restructuring work at AXI?","Ask: what legal dependencies exist for current strategic initiatives?","Note: where does Legal show up in the CFO Office's work?"]},
+  {day:10,theme:"Budget & forecasting cycle",focus:"Financial planning rhythm",tasks:["Ask for the annual budget calendar — when does planning start, who leads it?","Understand the budget ramp process: what categories, who coordinates?","Review last year's budget vs. actuals summary if available","Ask: how does the CFO use budget data in weekly decision-making?","Draft a brief process map of the budget cycle as you understand it"]},
+  {day:11,theme:"Initiative tracking",focus:"Execution frameworks",tasks:["Ask for all current cross-functional initiative trackers","Review: what format are they in? (Excel, slides, project system?)","Identify: gaps in tracking — what's missing or outdated?","Propose: a standard initiative status template (draft it today)","Share draft with manager and ask for feedback"]},
+  {day:12,theme:"Meet People & HR",focus:"People operations context",tasks:["Intro call: Chief People Officer or HR lead","Understand: how does workforce planning connect to Finance?","Learn: what people-related data flows to the CFO Office?","Given your Workday/HCM background — identify if AXI uses Workday","Ask: are there active people/org initiatives the CFO Office is involved in?"]},
+  {day:13,theme:"Investor prep context",focus:"External stakeholder awareness",tasks:["Ask: who are AXI's key investors or capital partners?","Learn: what materials are prepared for investor meetings?","Understand: how often do investor touchpoints happen, who leads them?","Ask to see a sample investor briefing package (redacted is fine)","Note: what is your expected role in investor prep going forward?"]},
+  {day:14,theme:"Week 2 reflection",focus:"Deepen and document",tasks:["Update your open questions list — what's been answered, what remains?","Write: a 1-page summary of 'how AXI works' in your own words","Send week 2 recap to your manager — include what you've learned and what you still need","Confirm: do you have the access and tools you need to be effective?","Schedule: a 30-day check-in with your manager for Day 30"]},
+  {day:15,theme:"Your first deliverable",focus:"Produce something real",tasks:["Pick one deliverable and draft a real output for CFO Office use","Options: Blue Book section template, a variance narrative, a KPI list","Share the draft with your manager proactively — don't wait to be asked","Ask for honest feedback: what's right, what's missing, what needs adjustment","Revise and finalize — this is your first tangible contribution"]},
+  {day:16,theme:"Communication norms",focus:"How AXI communicates",tasks:["Ask your manager: how does leadership prefer to receive updates?","Learn: what goes in email vs. Slack vs. a formal document?","Understand the meeting cadence: what recurring meetings exist, which should you attend?","Ask to be added to relevant standing meetings — Blue Book review, initiative check-ins","Draft your personal communication rhythm for the week"]},
+  {day:17,theme:"Technology & tools",focus:"Get productive",tasks:["Confirm you have access to all key systems (finance system, project tracker, shared drives)","Learn: how does the team share documents? (SharePoint, Box, Google Drive?)","Ask: is there a templates library or existing asset bank?","Set up your own folder structure for your role","Understand: what reporting tools are used? (Excel, BI tools, dashboards?)"]},
+  {day:18,theme:"CFO priorities deep dive",focus:"Your primary exec partner",tasks:["Schedule a dedicated 30-min conversation with the CFO if not done yet","Ask: what are the CFO's top 3 pain points right now?","Ask: what does a 'great week' look like from the CFO's perspective?","Understand: what decisions does the CFO make weekly that you can support?","Write: a personal summary of 'how I can add value to the CFO this quarter'"]},
+  {day:19,theme:"Entity & restructuring overview",focus:"Structural complexity",tasks:["Ask Legal or Finance: how many legal entities does AXI operate?","Understand: are there active restructuring or entity change initiatives?","Learn: what is your role when entity changes are in progress?","Ask for any org charts showing the legal/corporate structure","Note: what cross-functional teams are involved in restructuring work?"]},
+  {day:20,theme:"Strategic initiative deep dive",focus:"Pick one, go deep",tasks:["Choose one active strategic initiative — ask to get fully briefed on it","Read all background materials for that initiative","Map: who are the stakeholders, what is the timeline, what are the blockers?","Draft a one-page status summary for that initiative","Share with your manager — ask: 'is this the right format?'"]},
+  {day:21,theme:"Week 3 reflection",focus:"Start owning things",tasks:["Identify: one recurring process you can own starting next week","Propose it to your manager — be specific about what you'd own and how","Review your 30-60-90 day plan — are you on track for Day 30 goals?","Write: 3 wins from your first 3 weeks","Write: 3 things you're still uncertain about — discuss with manager"]},
+  {day:22,theme:"Remote visibility strategy",focus:"Be seen without being there",tasks:["Draft your personal communication plan: daily check-in format, weekly update format","Set up a standing 1:1 with your manager if not already done","Ask: is there a team channel or all-hands rhythm you should participate in?","Send a brief written update to your manager — make your work visible","Identify: one person outside Finance/Investments to build a relationship with"]},
+  {day:23,theme:"Build your stakeholder map",focus:"Relationships = execution",tasks:["List every person you need a working relationship with to do your job","Rate each relationship: strong / getting there / not yet started","Plan: one outreach per week to a relationship you haven't built yet","Ask your manager: 'who do I most need to know that I haven't met yet?'","Schedule at least 2 relationship-building calls for the next 2 weeks"]},
+  {day:24,theme:"Performance metrics draft",focus:"Define your own success",tasks:["Draft 5-7 metrics that would show you're doing your job well","Include: Blue Book quality, initiative progress, CFO prep timeliness, stakeholder satisfaction","Share with your manager: 'here's how I think I should be measured — does this match your view?'","Agree on a check-in format: how will you measure your own progress?","Add these to your personal tracker"]},
+  {day:25,theme:"Shadow a key meeting",focus:"Learn by observing",tasks:["Ask to sit in on a CFO leadership meeting, Blue Book review, or initiative check-in","Observe: how decisions are made, who speaks, what format is used","Take notes — not to share, but to understand the room","After: write 3 observations about the meeting dynamic","Ask your manager: 'what should I have noticed that I might have missed?'"]},
+  {day:26,theme:"Draft your 60-day plan",focus:"Build momentum forward",tasks:["Based on what you've learned, draft your personal 60-day plan","Include: 2 deliverables you'll own, 3 relationships to deepen, 1 process to improve","Share with your manager for input before Day 30 check-in","Ask: what does success look like at Day 60 in your manager's view?","Revise and save as your working plan"]},
+  {day:27,theme:"Reference library review",focus:"Know your materials",tasks:["Review all materials in the Reference Library tab of this hub","Identify: 2 topics where you want to go deeper","Ask: is there an AXI glossary or internal terminology guide?","Build your own AXI glossary as you encounter firm-specific terms","Offer to maintain the glossary as a shared resource"]},
+  {day:28,theme:"Process improvement proposal",focus:"Contribute from day one",tasks:["Identify one process you've observed that could be more efficient","Write a 1-page process improvement proposal: current state, proposed, benefit","Keep it practical and low-risk — a quick win, not a major overhaul","Share with your manager: 'I'd like to try improving this — thoughts?'","If approved, plan implementation for month 2"]},
+  {day:29,theme:"Wrap up month 1",focus:"Reflect and prepare",tasks:["Complete your Month 1 self-assessment in the progress tracker","Write a personal reflection: what's gone well, what's been hard, what's surprised you","Finalize your list of open questions and outstanding items","Prepare your talking points for the Day 30 check-in","Send a brief thank-you note to 2-3 people who helped you most this month"]},
+  {day:30,theme:"30-day check-in",focus:"Set up month 2",tasks:["Hold your 30-day check-in with your manager","Present: what you've learned, what you've contributed, your 60-day plan","Ask for direct feedback: what's working, what should you do differently?","Agree on 2-3 specific priorities for Month 2","Celebrate — you've completed your first month at Axonic"]}
+];
+
+const people = [
+  {initials:"CoS",name:"Chief of Staff",role:"Your direct manager",dept:"Executive",bg:"#E6F1FB",tc:"#0C447C",desc:"Your primary relationship at AXI. Keep this person informed of everything. Weekly 1:1 is your most important recurring meeting. This is who shields you from noise and connects you to leadership priorities."},
+  {initials:"CFO",name:"Chief Financial Officer",role:"Primary executive partner",dept:"Finance",bg:"#EEEDFE",tc:"#3C3489",desc:"You directly support the CFO's agenda. Learn their communication style, what they care about, and what a 'great week' looks like for them. Everything you produce ultimately flows to or from this person."},
+  {initials:"FIN",name:"Finance team",role:"Budget, reporting, planning",dept:"Finance",bg:"#EEEDFE",tc:"#3C3489",desc:"Owns P&L, balance sheet, budgeting, variance analysis, and internal reporting including the Blue Book. Your primary source for financial data. You coordinate their inputs and translate outputs for leadership."},
+  {initials:"INV",name:"Investments team",role:"Portfolio & capital strategy",dept:"Investments",bg:"#E1F5EE",tc:"#085041",desc:"Manages AXI's investment portfolio. You coordinate with this team on portfolio reporting for the Blue Book and executive materials. A key data provider for CFO briefings and investor prep."},
+  {initials:"OPS",name:"Operations",role:"Process & execution backbone",dept:"Operations",bg:"#FAEEDA",tc:"#633806",desc:"Handles day-to-day operational processes. Often involved in cross-functional initiative execution. Partner for identifying and implementing process improvement opportunities."},
+  {initials:"TEC",name:"Technology",role:"Systems & data infrastructure",dept:"Technology",bg:"#FAEEDA",tc:"#633806",desc:"Owns AXI's tech stack. Relevant when initiatives involve systems changes, data access, or reporting tools. Important for your own tool access and data flows from day one."},
+  {initials:"LGL",name:"Legal / Compliance",role:"Entity, regulatory, risk",dept:"Legal",bg:"#FCEBEB",tc:"#791F1F",desc:"Critical partner for entity management, restructuring, and anything with regulatory implications. Build this relationship early — you'll need them on complex cross-functional initiatives."},
+  {initials:"PPL",name:"People & HR",role:"Workforce & org design",dept:"People",bg:"#F1EFE8",tc:"#444441",desc:"Your operations background at Novartis is a strength here. HR owns org changes, compensation, and workforce data. Relevant when restructuring or entity initiatives have people implications."},
+];
+
+const refs = [
+  {icon:"📄",cat:"Finance",title:"How insurance companies make money",desc:"Premium income, combined ratio, float, and investment returns.",prompt:"Explain how P&C insurance companies generate profit — premium, combined ratio, float, and investment income — in plain language for a new CFO Office strategic initiatives director at an insurance firm"},
+  {icon:"📊",cat:"Reporting",title:"The Blue Book — what it is and why it matters",desc:"AXI's primary internal financial and strategic report. You will coordinate, produce, and improve it.",prompt:"Explain what an insurance company Blue Book is, what sections it typically contains, and what makes a great vs. mediocre one from a CFO's perspective"},
+  {icon:"📈",cat:"Finance",title:"Budget ramp categories explained",desc:"How budget ramp structure works and how categories map to business priorities.",prompt:"Explain what budget ramp categories are in a finance context, how they are structured, and how a Chief of Staff team member would coordinate a budget ramp process at an insurance firm"},
+  {icon:"🏢",cat:"Structure",title:"Legal entity management in insurance",desc:"Why insurance firms operate multiple entities and what entity management involves day to day.",prompt:"Explain why insurance holding companies operate multiple legal entities, what entity management involves day-to-day, and how this connects to the CFO Office"},
+  {icon:"💼",cat:"Investments",title:"Insurance investment portfolios 101",desc:"Asset classes, duration matching, and regulatory constraints — a non-specialist's guide.",prompt:"Explain how insurance companies invest their float — what asset classes, constraints, and objectives typically apply — at a level suitable for a non-investment specialist supporting the CFO"},
+  {icon:"📋",cat:"Execution",title:"RACI matrices and initiative tracking",desc:"How to use RACI for cross-functional accountability.",prompt:"Give me a detailed guide on using RACI matrices for cross-functional strategic initiatives, with a sample for a finance-adjacent project at an insurance firm"},
+  {icon:"🤝",cat:"Remote",title:"Building influence without physical presence",desc:"How to build credibility, trust, and relationships as a fully remote senior team member.",prompt:"Give me a comprehensive guide for a fully remote Director-level employee at a finance firm on how to build influence, visibility, and strong working relationships without being in the office"},
+  {icon:"📰",cat:"Insurance",title:"NYC insurance market context",desc:"The competitive and regulatory landscape for a NYC-based insurance business.",prompt:"Describe the competitive and regulatory landscape for a mid-size NYC-based insurance firm — key regulators, market dynamics, and strategic pressures a CFO Office team member should understand"},
+  {icon:"⚙️",cat:"Execution",title:"Executive briefing materials — standards and formats",desc:"What great executive briefings look like and how to produce them efficiently.",prompt:"Give me a guide on how to produce high-quality executive briefing materials for a CFO — structure, format, length, and common mistakes to avoid"},
+  {icon:"📅",cat:"Planning",title:"Strategic planning cycles in financial firms",desc:"Annual and quarterly planning rhythms and how the Chief of Staff team plugs in.",prompt:"Explain the typical annual and quarterly strategic planning cycle at a financial services firm and describe how a Chief of Staff office team member supports each stage"},
+];
+
+const ninetyPlan = [
+  {phase:"Days 1–30",label:"Learn",color:"#185FA5",light:"#E6F1FB",tc:"#0C447C",goals:["Understand AXI's business model, org structure, and key people","Complete all 30 days of the daily onboarding plan","Attend every intro meeting and take structured notes","Get full access to all systems and recurring meetings","Produce at least one tangible deliverable (Blue Book section, initiative summary)"],success:"You can describe what AXI does, who does what, and where your role sits — without notes."},
+  {phase:"Days 31–60",label:"Contribute",color:"#0F6E56",light:"#E1F5EE",tc:"#085041",goals:["Own one recurring deliverable (e.g., a Blue Book section, initiative tracker)","Build working relationships with Finance, Investments, Legal, and Ops leads","Propose and implement one process improvement","Support preparation of at least one investor or leadership briefing","Establish your communication rhythm with the CFO and your manager"],success:"You are reliably producing output that the CFO Office depends on, on time and to standard."},
+  {phase:"Days 61–90",label:"Lead",color:"#533AB7",light:"#EEEDFE",tc:"#3C3489",goals:["Own a full strategic initiative from kickoff to status reporting","Drive the Blue Book production cycle with minimal manager involvement","Build your stakeholder map across all key departments","Present a 90-day self-assessment to your manager","Propose your Q2 priorities — don't wait to be assigned them"],success:"Leadership sees you as the person who moves things forward. You are proactive, not reactive."},
+];
+
+// ============================================================
+// CORE FUNCTIONS
+// ============================================================
+function getDoneDays() { return Object.values(S.completedDays).filter(Boolean).length; }
+function updateHeader() {
+  const pct = Math.round(getDoneDays() / 30 * 100);
+  document.getElementById('hdr-pct').textContent = pct + '% complete';
+}
+
+function show(id) {
+  S.activeSection = id;
+  document.querySelectorAll('#main-tabs .tab').forEach(t => t.classList.remove('active'));
+  const order = ['overview','906090','calendar','org','role','refs','remote','tracker'];
+  const idx = order.indexOf(id);
+  if (idx >= 0) document.querySelectorAll('#main-tabs .tab')[idx].classList.add('active');
+  render(); updateHeader(); localSave();
+}
+
+function render() {
+  const b = document.getElementById('body');
+  const fns = {overview:renderOverview,'906090':render9060,calendar:renderCalendar,org:renderOrg,role:renderRole,refs:renderRefs,remote:renderRemote,tracker:renderTracker};
+  if (fns[S.activeSection]) fns[S.activeSection](b);
+}
+
+function saveNote(d, v) { S.dayNotes[d] = v; scheduleSave(); }
+function openDay(d) { S.activeDay = S.activeDay === d ? null : d; localSave(); render(); }
+function checkTask(day, idx) {
+  const key = `d${day}_${idx}`;
+  S.taskChecks[key] = !S.taskChecks[key];
+  scheduleSave(); render();
+}
+function markDayDone(d) {
+  S.completedDays[d] = true;
+  dailyPlan[d-1].tasks.forEach((_, i) => { S.taskChecks[`d${d}_${i}`] = true; });
+  scheduleSave(); updateHeader(); render();
+}
+
+// ============================================================
+// RENDER FUNCTIONS
+// ============================================================
+function renderOverview(b) {
+  const done = getDoneDays(), pct = Math.round(done/30*100);
+  b.innerHTML = `<div class="grid-4" style="margin-bottom:12px;">
+    <div class="metric-card"><div class="metric-val">${done}/30</div><div class="metric-lbl">Days complete</div></div>
+    <div class="metric-card"><div class="metric-val">${pct}%</div><div class="metric-lbl">Month 1 progress</div></div>
+    <div class="metric-card"><div class="metric-val">8</div><div class="metric-lbl">Key people to meet</div></div>
+    <div class="metric-card"><div class="metric-val">10</div><div class="metric-lbl">Reference guides</div></div>
+  </div>
+  <div class="card" style="margin-bottom:12px;">
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:5px;"><span>Month 1 progress</span><span>${done}/30 days complete</span></div>
+    <div class="prog-outer"><div class="prog-inner" style="background:var(--blue);width:${pct}%;"></div></div>
+  </div>
+  <div class="card-tinted" style="background:var(--blue-light);border:0.5px solid var(--blue);margin-bottom:12px;">
+    <div style="font-size:13px;font-weight:500;color:var(--blue-dark);margin-bottom:6px;">Welcome to Axonic, Shay</div>
+    <div style="font-size:13px;color:var(--blue-dark);line-height:1.7;">This hub is your home base for the first 90 days at Axonic Insurance. Check off tasks as you go — progress saves automatically and syncs to Google Sheets so your manager can see your progress in real time. The Reference Library has 10 pre-written prompts you can paste into Claude (claude.ai) for instant deep-dives on any topic.</div>
+  </div>
+  <div class="grid-2">
+    <div class="card"><div class="sec-lbl">Quick access</div><h3 style="margin-bottom:5px;">Daily training plan</h3><div style="font-size:13px;color:var(--text2);margin-bottom:12px;">30 structured days of learning, meetings, and deliverables.</div><button class="btn" onclick="show('calendar')">Go to daily plan →</button></div>
+    <div class="card"><div class="sec-lbl">Quick access</div><h3 style="margin-bottom:5px;">30-60-90 day plan</h3><div style="font-size:13px;color:var(--text2);margin-bottom:12px;">Learn → Contribute → Lead. See what success looks like at each milestone.</div><button class="btn" onclick="show('906090')">View milestones →</button></div>
+    <div class="card"><div class="sec-lbl">Quick access</div><h3 style="margin-bottom:5px;">AXI org &amp; people</h3><div style="font-size:13px;color:var(--text2);margin-bottom:12px;">Who does what at Axonic. Key contacts and how each team connects to your role.</div><button class="btn" onclick="show('org')">Meet the team →</button></div>
+    <div class="card"><div class="sec-lbl">Quick access</div><h3 style="margin-bottom:5px;">Reference library</h3><div style="font-size:13px;color:var(--text2);margin-bottom:12px;">10 Claude prompts covering insurance, finance, reporting, and execution.</div><button class="btn" onclick="show('refs')">Open library →</button></div>
+  </div>`;
+}
+
+function render9060(b) {
+  let html = '';
+  ninetyPlan.forEach((p, i) => {
+    html += `<div style="background:${p.light};border:0.5px solid ${p.color};border-radius:var(--radius-lg);padding:1rem 1.25rem;margin-bottom:12px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+        <div style="background:${p.color};color:white;border-radius:var(--radius);padding:4px 12px;font-size:12px;font-weight:500;">${p.phase}</div>
+        <h2 style="color:${p.color};">Phase ${i+1}: ${p.label}</h2>
+      </div>
+      <div class="sec-lbl">Goals for this phase</div>
+      ${p.goals.map(g => `<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:7px;"><div class="dot" style="background:${p.color};"></div><div style="font-size:13px;line-height:1.6;">${g}</div></div>`).join('')}
+      <div style="margin-top:12px;padding:10px 14px;background:rgba(255,255,255,0.6);border-left:3px solid ${p.color};border-radius:0 var(--radius) var(--radius) 0;">
+        <div class="sec-lbl" style="margin-bottom:3px;">What success looks like</div>
+        <div style="font-size:13px;line-height:1.6;color:${p.tc};">${p.success}</div>
+      </div>
+    </div>`;
+  });
+  html += `<div class="card"><div class="sec-lbl">Remote-specific considerations by phase</div>
+    ${[
+      {t:"Days 1–30: Over-communicate intentionally",d:"As a remote employee, you will not be seen in the office. Send brief weekly written updates. Ask more questions than you think you need to. Visibility is earned through consistency, not hours."},
+      {t:"Days 31–60: Build asynchronous habits",d:"You won't be in hallway conversations. Build async habits: written summaries after every call, shared docs for running agendas, status updates people can read without asking you."},
+      {t:"Days 61–90: Lead with output, not activity",d:"Remote credibility is built on deliverables. By day 90, leadership should see your name on things — Blue Book sections, initiative trackers, briefing materials."},
+    ].map(r => `<div style="padding:10px 0;border-bottom:0.5px solid var(--border);"><div style="font-size:13px;font-weight:500;margin-bottom:4px;">${r.t}</div><div style="font-size:13px;color:var(--text2);line-height:1.6;">${r.d}</div></div>`).join('')}
+  </div>`;
+  b.innerHTML = html;
+}
+
+function renderCalendar(b) {
+  let calHtml = `<div class="card" style="margin-bottom:12px;"><div class="sec-lbl" style="margin-bottom:10px;">Month 1 at a glance — click any day to open</div><div style="display:flex;gap:5px;flex-wrap:wrap;">`;
+  for (let d = 1; d <= 30; d++) {
+    calHtml += `<div class="day-pill ${S.completedDays[d]?'done':''} ${S.activeDay===d?'active':''}" onclick="openDay(${d})">${d}</div>`;
+  }
+  calHtml += `</div></div>`;
+  let dayHtml = '';
+  if (S.activeDay) {
+    const dp = dailyPlan[S.activeDay - 1];
+    dayHtml = `<div class="card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+        <div><div class="sec-lbl">Day ${S.activeDay} · ${dp.focus}</div><h2>${dp.theme}</h2></div>
+        <button class="btn" onclick="markDayDone(${S.activeDay})">Mark day complete</button>
+      </div>
+      <div class="sec-lbl">Today's tasks</div>
+      ${dp.tasks.map((task, i) => {
+        const done = !!S.taskChecks[`d${S.activeDay}_${i}`];
+        return `<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:0.5px solid var(--border);">
+          <div class="check-circle ${done?'done':''}" onclick="checkTask(${S.activeDay},${i})"></div>
+          <div style="font-size:13px;line-height:1.6;${done?'text-decoration:line-through;opacity:0.5;':''}">${task}</div>
+        </div>`;
+      }).join('')}
+      <div style="margin-top:14px;"><div class="sec-lbl">Your notes for Day ${S.activeDay}</div>
+      <textarea rows="3" placeholder="Reflections, key takeaways, open questions — these sync to Google Sheets..." onchange="saveNote(${S.activeDay},this.value)">${S.dayNotes[S.activeDay]||''}</textarea>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px;">Notes auto-save and sync to Google Sheets</div></div>
+    </div>`;
+  } else {
+    dayHtml = `<div class="card" style="color:var(--text2);font-size:13px;">Click a day above to open your tasks and take notes for that day.</div>`;
+  }
+  b.innerHTML = calHtml + dayHtml;
+}
+
+function renderOrg(b) {
+  b.innerHTML = `<div class="card" style="margin-bottom:12px;">
+    <div class="sec-lbl" style="margin-bottom:4px;">Axonic Insurance — 520 Madison Ave, NYC (you are fully remote)</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.6;">As a remote team member, you are a virtual extension of the Chief of Staff office. Every team below is one you will work with regularly. Invest in these relationships deliberately.</div>
+    ${people.map(p => `<div class="person-card">
+      <div class="avatar" style="background:${p.bg};color:${p.tc};">${p.initials}</div>
+      <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;flex-wrap:wrap;">
+          <span style="font-size:13px;font-weight:500;">${p.name}</span>
+          <span class="badge" style="background:${p.bg};color:${p.tc};">${p.dept}</span>
+        </div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:4px;">${p.role}</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.5;">${p.desc}</div>
+      </div>
+    </div>`).join('')}
+  </div>
+  <div class="card"><div class="sec-lbl">Team functions at a glance</div><div style="overflow-x:auto;">
+    <table class="data"><thead><tr><th>Team</th><th>What they own</th><th>How you work together</th></tr></thead><tbody>
+      <tr><td>Finance</td><td>P&amp;L, balance sheet, budgeting, variance analysis, Blue Book</td><td>Primary data source; coordinate inputs and translate outputs for leadership</td></tr>
+      <tr><td>Investments</td><td>Portfolio management, capital allocation, investment reporting</td><td>Coordinate portfolio data for Blue Book; support investor prep materials</td></tr>
+      <tr><td>Operations</td><td>Workflow, processes, vendor management, admin infrastructure</td><td>Partner on cross-functional initiatives; surface process improvement opportunities</td></tr>
+      <tr><td>Technology</td><td>Systems, data, infrastructure, reporting tools</td><td>Ensure you have system access; involve when initiatives require tech changes</td></tr>
+      <tr><td>Legal</td><td>Entity management, contracts, compliance, regulatory</td><td>Critical for restructuring; loop in early on anything with legal implications</td></tr>
+      <tr><td>People/HR</td><td>Workforce planning, compensation, org design</td><td>Coordinate when initiatives affect headcount or org structure</td></tr>
+    </tbody></table>
+  </div></div>`;
+}
+
+function renderRole(b) {
+  b.innerHTML = `<div class="card-tinted" style="background:var(--purple-light);border:0.5px solid var(--purple);margin-bottom:12px;">
+    <div class="sec-lbl" style="color:var(--purple-dark);margin-bottom:5px;">Your role at AXI</div>
+    <h2 style="color:var(--purple-dark);margin-bottom:8px;">Director, Strategic Initiatives — CFO Office</h2>
+    <div style="font-size:13px;color:var(--purple);line-height:1.7;">You sit between the Chief of Staff and the CFO, translating leadership priorities into structured execution. You are not just a project manager — you are a strategic partner who makes things happen and keeps leadership informed.</div>
+  </div>
+  <div class="card" style="margin-bottom:12px;"><div class="sec-lbl">Your four core functions</div>
+    ${[
+      {t:"Strategic execution",d:"Take a priority from the CFO or Chief of Staff and turn it into a plan — timeline, owners, milestones, accountability.",bg:"#E6F1FB",tc:"#0C447C"},
+      {t:"Blue Book & executive reporting",d:"Coordinate, compile, and increasingly own the Blue Book — AXI's primary leadership report. You ensure it is accurate, on time, and decision-ready.",bg:"#EEEDFE",tc:"#3C3489"},
+      {t:"Finance & investment coordination",d:"Work with Finance and Investments to produce materials for leadership. Translate financial data into executive narratives.",bg:"#E1F5EE",tc:"#085041"},
+      {t:"Cross-functional initiative management",d:"When a big initiative crosses departments, you are the coordinator. You own the RACI, the timeline, the status updates, and the escalations.",bg:"#FAEEDA",tc:"#633806"},
+    ].map(f => `<div style="padding:10px 0;border-bottom:0.5px solid var(--border);">
+      <span class="badge" style="background:${f.bg};color:${f.tc};margin-bottom:5px;display:inline-block;">${f.t}</span>
+      <div style="font-size:13px;color:var(--text2);line-height:1.6;">${f.d}</div>
+    </div>`).join('')}
+  </div>
+  <div class="card" style="margin-bottom:12px;"><div class="sec-lbl">Initiatives you can help with from day one</div>
+    ${["Blue Book production coordination — take over one section in month 1","Initiative status tracker — build or improve the existing format","Budget ramp coordination — support the next planning cycle","Investor preparation — help compile and organize briefing materials","Entity management support — coordinate between Legal, Finance, and Ops","Cross-functional working sessions — design and run the agenda","Process improvement proposals — identify and fix one operational gap","Executive briefing materials — draft or format for CFO review"]
+    .map(item => `<div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:0.5px solid var(--border);"><div class="dot" style="background:var(--purple);"></div><div style="font-size:13px;line-height:1.5;">${item}</div></div>`).join('')}
+  </div>
+  <div class="card"><div class="sec-lbl">How your background maps to this role</div>
+    ${[
+      {from:"EA to CFO at MJH Life Sciences",to:"Direct CFO Office experience — revenue reporting, budgeting, financial ops"},
+      {from:"EA to Chief Tax Officer at Newell Brands",to:"Finance controls, compliance, budget management, vendor ops"},
+      {from:"People Operations Manager at Novartis",to:"Cross-functional execution, Workday HCM, org transformations, restructurings"},
+      {from:"U.S. Country PM, Workday HCM implementation",to:"Large-scale initiative management, stakeholder alignment, on-time delivery"},
+      {from:"MBA, Human Resource Management",to:"Strategic thinking, workforce-finance intersection, change management"},
+    ].map(r => `<div style="display:flex;gap:12px;align-items:flex-start;padding:8px 0;border-bottom:0.5px solid var(--border);flex-wrap:wrap;">
+      <div style="flex:1;min-width:160px;font-size:13px;color:var(--text2);">${r.from}</div>
+      <div style="color:var(--text3);font-size:14px;">→</div>
+      <div style="flex:1.5;min-width:200px;font-size:13px;">${r.to}</div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function renderRefs(b) {
+  b.innerHTML = `<div class="card"><div class="sec-lbl">Reference library — 10 guided topics</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.6;">Each guide has a pre-written prompt. Copy it and paste into <a href="https://claude.ai" target="_blank" style="color:var(--blue);">claude.ai</a> for a full explanation tailored to your role at AXI.</div>
+    ${refs.map((r, i) => `<div class="ref-item">
+      <div class="ref-icon">${r.icon}</div>
+      <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap;">
+          <span style="font-size:13px;font-weight:500;">${r.title}</span>
+          <span class="badge" style="background:var(--bg2);color:var(--text2);">${r.cat}</span>
+        </div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:7px;line-height:1.5;">${r.desc}</div>
+        <div style="background:var(--bg2);border-radius:var(--radius);padding:8px 10px;font-size:12px;color:var(--text3);font-family:monospace;line-height:1.5;margin-bottom:6px;word-break:break-word;">${r.prompt}</div>
+        <button class="btn" style="font-size:11px;" onclick="copyPrompt(${i})">Copy prompt</button>
+        <span id="copied_${i}" style="font-size:11px;color:var(--green);display:none;margin-left:8px;">Copied!</span>
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function copyPrompt(i) {
+  const text = refs[i].prompt;
+  navigator.clipboard.writeText(text).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+  });
+  const el = document.getElementById('copied_' + i);
+  el.style.display = 'inline';
+  setTimeout(() => el.style.display = 'none', 2000);
+}
+
+function renderRemote(b) {
+  b.innerHTML = `<div class="card-tinted" style="background:var(--amber-light);border:0.5px solid var(--amber);margin-bottom:12px;">
+    <div class="sec-lbl" style="color:var(--amber-dark);">A note for Shay's manager</div>
+    <div style="font-size:13px;color:var(--amber-dark);line-height:1.7;">This page has two sections — a playbook for Shay and one for you. Managing a senior fully remote team member for the first time requires deliberate structure.</div>
+  </div>
+  <div class="card" style="margin-bottom:12px;"><div class="sec-lbl">Shay's remote success playbook</div>
+    ${[
+      {t:"Establish a communication rhythm from week 1",d:"Send a brief written update to your manager every Friday — what you accomplished, what's next, any blockers. Don't wait to be asked. This single habit builds more trust than almost anything else."},
+      {t:"Over-index on written communication",d:"Your Slack messages, emails, and shared docs ARE your presence. Write clearly. Summarize every call with a brief recap. Make it easy for people to know where things stand without asking you."},
+      {t:"Make yourself easy to reach",d:"Set clear working hours and share them. Respect the NYC timezone — most of your colleagues are in-office and expect responsiveness during core hours (9am–6pm ET)."},
+      {t:"Invest in relationships proactively",d:"Schedule brief 20-minute virtual coffees with key contacts in your first 30 days. Don't wait for a reason to talk to someone."},
+      {t:"Make your output visible",d:"When you complete something, share it. 'Here's the draft Blue Book section — let me know if this is the right format' is infinitely better than waiting to be noticed."},
+      {t:"Ask for feedback explicitly",d:"You won't get casual hallway feedback as a remote employee. Ask for it directly. 'Am I giving you what you need?' is a powerful question."},
+    ].map(item => `<div style="padding:10px 0;border-bottom:0.5px solid var(--border);"><div style="font-size:13px;font-weight:500;margin-bottom:4px;">${item.t}</div><div style="font-size:13px;color:var(--text2);line-height:1.6;">${item.d}</div></div>`).join('')}
+  </div>
+  <div class="card" style="margin-bottom:12px;"><div class="sec-lbl">Manager's remote playbook</div>
+    ${[
+      {t:"Set up a standing weekly 1:1 before day 1",d:"This is non-negotiable. A consistent 30–45 minute weekly 1:1 with a clear agenda is the single most important thing you can do. Don't cancel it unless absolutely necessary."},
+      {t:"Define 'done' clearly for every assignment",d:"In-office employees pick up context organically. Remote employees can't. For every task you assign, be explicit: what format, what level of detail, what deadline, who will see it."},
+      {t:"Check in proactively",d:"New remote employees often go quiet when overwhelmed. 'How's it going — any blockers?' is more useful than waiting for escalation."},
+      {t:"Include her in meetings intentionally",d:"For every standing meeting — ask: should Shay be in this? Err toward inclusion in month 1. Starting excluded is harder to recover from."},
+      {t:"Give feedback faster than you would in-office",d:"Remote employees don't get passive feedback signals. Send a brief note after every deliverable — what worked, what to adjust."},
+      {t:"Plan an in-person visit in the first 90 days",d:"Even a single day in the NYC office will accelerate Shay's integration by weeks. Plan it proactively, don't leave it to chance."},
+    ].map(item => `<div style="padding:10px 0;border-bottom:0.5px solid var(--border);"><div style="font-size:13px;font-weight:500;margin-bottom:4px;">${item.t}</div><div style="font-size:13px;color:var(--text2);line-height:1.6;">${item.d}</div></div>`).join('')}
+  </div>
+  <div class="card"><div class="sec-lbl">Suggested weekly rhythm</div><div style="overflow-x:auto;">
+    <table class="data"><thead><tr><th>Day</th><th>Shay</th><th>Manager</th></tr></thead><tbody>
+      <tr><td>Monday</td><td>Review weekly priorities, check trackers, send morning message to manager</td><td>Share new priorities or context from leadership</td></tr>
+      <tr><td>Tue–Thu</td><td>Deep work: Blue Book, initiative coordination, stakeholder calls, deliverable production</td><td>Respond to messages same day; share relevant meeting outputs</td></tr>
+      <tr><td>Friday</td><td>Send weekly written update (wins, priorities, blockers)</td><td>Read update, respond with feedback, confirm priorities for next week</td></tr>
+    </tbody></table>
+  </div></div>`;
+}
+
+function renderTracker(b) {
+  const done = getDoneDays();
+  const totalT = Object.values(S.taskChecks).filter(Boolean).length;
+  const weeks = [
+    {wk:"Week 1",days:[1,2,3,4,5,6],theme:"Orientation & introductions"},
+    {wk:"Week 2",days:[7,8,9,10,11,12,13],theme:"Deep dives & systems"},
+    {wk:"Week 3",days:[14,15,16,17,18,19,20],theme:"First contributions"},
+    {wk:"Week 4",days:[21,22,23,24,25,26,27],theme:"Build habits & relationships"},
+    {wk:"Week 5",days:[28,29,30],theme:"Wrap up & plan month 2"},
+  ];
+  b.innerHTML = `<div class="card" style="margin-bottom:12px;"><div class="sec-lbl">Live progress database</div>
+    <div class="grid-3" style="margin-bottom:14px;">
+      <div class="metric-card"><div class="metric-val">${done}/30</div><div class="metric-lbl">Days complete</div></div>
+      <div class="metric-card"><div class="metric-val">${totalT}</div><div class="metric-lbl">Tasks checked off</div></div>
+      <div class="metric-card"><div class="metric-val">${Math.round(done/30*100)}%</div><div class="metric-lbl">Month 1 complete</div></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+      <button class="btn btn-blue" onclick="saveToSheets()">Force sync to Google Sheets</button>
+      <button class="btn" onclick="loadFromSheets()">Load from Google Sheets</button>
+    </div>
+    <div style="overflow-x:auto;"><table class="data"><thead><tr><th>Week</th><th>Days</th><th>Theme</th><th>Complete</th><th style="min-width:100px;">Progress</th></tr></thead><tbody>
+      ${weeks.map(w => {
+        const wD = w.days.filter(d => S.completedDays[d]).length;
+        const pct = Math.round(wD/w.days.length*100);
+        const col = pct===100?'var(--green)':pct>=50?'var(--amber)':'var(--text3)';
+        return `<tr><td>${w.wk}</td><td style="color:var(--text2);">Days ${w.days[0]}–${w.days[w.days.length-1]}</td><td style="color:var(--text2);">${w.theme}</td><td style="color:var(--text2);">${wD}/${w.days.length}</td><td><div class="prog-outer" style="width:90px;"><div class="prog-inner" style="background:${col};width:${pct}%;"></div></div></td></tr>`;
+      }).join('')}
+    </tbody></table></div>
+  </div>
+  <div class="card"><div class="sec-lbl">Day notes log</div>
+    ${Object.keys(S.dayNotes).filter(k => S.dayNotes[k]).length === 0
+      ? '<div style="font-size:13px;color:var(--text2);">No notes yet. Open a day in the Daily Plan and write reflections.</div>'
+      : Object.entries(S.dayNotes).filter(([k,v]) => v).map(([k,v]) => `<div style="padding:10px 0;border-bottom:0.5px solid var(--border);"><div class="sec-lbl" style="margin-bottom:3px;">Day ${k}</div><div style="font-size:13px;line-height:1.6;">${v}</div></div>`).join('')}
+  </div>`;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+localLoad();
+loadScriptUrl();
+render();
+updateHeader();
+
+if (SCRIPT_URL) {
+  setSyncStatus('syncing', 'Loading from Google Sheets...');
+  loadFromSheets().catch(() => {
+    setSyncStatus('error', 'Could not reach Google Sheets — working offline');
+  });
+} else {
+  document.getElementById('setup-banner').style.display = 'block';
+}
+</script>
+</body>
+</html>
